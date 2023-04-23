@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>Coffee and Wifi</title>
+	<!-- Font Awesome -->
+	<script defer src="https://use.fontawesome.com/releases/v6.2.0/js/all.js"></script>
+	<!-- CSS Stylesheets -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+</head>
+<style>
+	.cover {
+		object-fit: cover;
+		width: 100%;
+		height: 200px;
+	}
+
+	.form-div {
+		margin: 0 auto;
+		width: 50%;
+		padding: 50px 0;
+	}
+
+	footer {
+		background-color: #EEEEEE;
+		margin-top: 20px;
+	}
+
+	.copyright {
+		text-align: center;
+	}
+</style>
+
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top" id="mainNav">
+		<div class="container">
+			<a class="navbar-brand" href="{{url_for('home')}}">Coffee & WiFi</a>
+			<button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse"
+				data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false"
+				aria-label="Toggle navigation">
+				Menu
+				<i class="fas fa-bars"></i>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarResponsive">
+				<ul class="navbar-nav ms-auto">
+					<li class="nav-item">
+						<a class="nav-link" href="#cafes">Cafes</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#add_cafe">Add cafe</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<section id="cafes">
+		<div class="container-fluid">
+			<div class="row-fluid" id="main">
+				{% for cafe in cafes: %}
+				{% if loop.index0 % 3 == 0 %}
+				<div class="row justify-content-md-center">
+					{% endif %}
+					<div class="col-lg-3 col-md-6 d-flex justify-content-center mt-5 align-items-stretch">
+						<div class="card" style="width: 18rem;">
+							<img class="card-img-top cover" src="{{cafe['img_url']}}" alt="Card image cap">
+							<div class="card-body">
+								<h5 class="card-title">{{cafe['name']}}</h5>
+								<h6 class="card-subtitle text-muted mb-1">{{cafe['location']}}</h6>
+								<a href="{{cafe['map_url']}}" class="card-link">Map URL</a>
+								<p class="card-text mt-2">
+									<i class="fas fa-coffee mr-3" aria-hidden="true"></i> {{cafe['coffee_price']}}
+									<br>
+									<i class="fas fa-chair mr-3"></i> {{cafe['seats']}}
+									<br>
+									{% if cafe['has_toilet']: %}
+									<i class="fas fa-toilet" aria-hidden="true"></i>
+									{% endif %}
+									{% if cafe['has_wifi']: %}
+									<i class="fas fa-wifi" aria-hidden="true"></i>
+									{% endif %}
+									{% if cafe['has_sockets']: %}
+									<i class="fas fa-plug" style="width: 1.25rem; text-align:center"
+										aria-hidden="true"></i>
+									{% endif %}
+									{% if cafe['can_take_calls']: %}
+									<i class="fas fa-phone" aria-hidden="true"></i>
+									{% endif %}
+								</p>
+							</div>
+							<div class="card-body"><a href="/delete/{{cafe['id']}}" class="btn btn-dark">Delete</a>
+							</div>
+						</div>
+					</div>
+					{% if loop.index0 % 3 == 2 or loop.last %}
+				</div>
+				{% endif %}
+				{% endfor %}
+			</div>
+		</div>
+	</section>
+	<footer>
+		<section id="add_cafe">
+			<div class="container-fluid">
+				<div class="row justify-content-center">
+					<div class="col-xl-10 form-div">
+						<h1>Add your cafe.</h1>
+						<form method="POST" action="/add" class="form">
+							<div class="form-group row">
+								<label for="name">Cafe Name</label>
+								<input class="form-control" id="name" name="name" required="" type="text" value="">
+							</div>
+							<div class="form-group row">
+								<label for="map_url">Google Maps URL</label>
+								<input class="form-control" id="map_url" name="map_url" required="" type="text"
+									value="">
+							</div>
+							<div class="form-group row">
+								<label for="img_url">Image URL</label>
+								<input class="form-control" id="img_url" name="img_url" required="" type="text"
+									value="">
+							</div>
+							<div class="form-group row">
+								<label for="location">Cafe Location</label>
+								<input class="form-control" id="location" name="location" required="" type="text"
+									value="">
+							</div>
+							<div class="form-group row">
+								<label for="coffee_price">Coffee Price</label>
+								<input class="form-control" id="coffee_price" name="coffee_price" type="text" value="">
+							</div>
+							<div class="form-group row">
+								<label for="seats">How many seats? (0-50) </label>
+								<input class="form-range" id="seats" max="50" name="seats" required="" step="10"
+									type="range" value="0">
+							</div>
+							<div class="form-check mb-4" style="margin-top: 1.5rem;">
+								<input class="form-check-input" id="has_sockets" name="has_sockets" type="checkbox"
+									value="1">
+								<input id="has_socketsHidden" type="hidden" value="0" name="has_sockets">
+								<label class="form-check-label" for="has_sockets">Has sockets</label>
+							</div>
+							<div class="form-check mb-4">
+								<input class="form-check-input" id="has_toilet" name="has_toilet" type="checkbox"
+									value="1">
+								<input id="has_toiletHidden" type="hidden" value="0" name="has_toilet">
+								<label class="form-check-label" for="has_toilet">Has toilets</label>
+							</div>
+							<div class="form-check mb-4">
+								<input class="form-check-input" id="has_wifi" name="has_wifi" type="checkbox" value="1">
+								<input id="has_wifiHidden" type="hidden" value="0" name="has_wifi">
+								<label class="form-check-label" for="has_wifi">Has wifi</label>
+							</div>
+							<div class="form-check mb-4">
+								<input class="form-check-input" id="can_take_calls" name="can_take_calls"
+									type="checkbox" value="1">
+								<input id="can_take_callsHidden" type="hidden" value="0" name="can_take_calls">
+								<label class="form-check-label" for="can_take_calls">Can take calls</label>
+							</div>
+							<div class="form-group row">
+								<input class="btn btn-outline-dark" id="submit" name="submit" type="submit"
+									value="Add Cafe">
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</section>
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 col-md-10 mx-auto">
+					<ul class="list-inline text-center">
+						<li class="list-inline-item">
+							<a href="https://twitter.com/TairD__">
+								<span class="fa-stack fa-lg">
+									<i class="fas fa-circle fa-stack-2x"></i>
+									<i class="fab fa-twitter fa-stack-1x fa-inverse"></i>
+								</span>
+							</a>
+						</li>
+						<li class="list-inline-item">
+							<a href="https://www.linkedin.com/in/tair-dulatuly-884599241">
+								<span class="fa-stack fa-lg">
+									<i class="fas fa-circle fa-stack-2x"></i>
+									<i class="fab fa-linkedin fa-stack-1x fa-inverse"></i>
+								</span>
+							</a>
+						</li>
+						<li class="list-inline-item">
+							<a href="https://github.com/dtekio">
+								<span class="fa-stack fa-lg">
+									<i class="fas fa-circle fa-stack-2x"></i>
+									<i class="fab fa-github fa-stack-1x fa-inverse"></i>
+								</span>
+							</a>
+						</li>
+					</ul>
+					<p class="copyright text-muted">Copyright &copy; Tair 2022</p>
+				</div>
+			</div>
+		</div>
+	</footer>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+		crossorigin="anonymous"></script>
+</body>
+
+</html>
